@@ -1008,6 +1008,20 @@ class Page(six.with_metaclass(PageBase, MP_Node, ClusterableModel, index.Indexed
         context['action_url'] = action_url
         return TemplateResponse(request, self.password_required_template, context)
 
+    def get_page_user_permissions(self, permission_type):
+        """
+        To be overriden by a derived page class in order to add additional
+        permissions to an individual page, outside of a group.
+
+        Args:
+            permission_type: str of permission type
+
+        Returns:
+            list of users with "permission_type" permission. Up to users
+            to implement.
+        """
+        return []
+
     class Meta:
         verbose_name = _('page')
         verbose_name_plural = _('pages')

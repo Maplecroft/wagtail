@@ -52,12 +52,17 @@ def get_object_usage(obj):
 
 def users_with_page_permission(page, permission_type, include_superusers=True):
     # Get user model
+
     User = get_user_model()
 
     # Find GroupPagePermission records of the given type that apply to this page or an ancestor
     ancestors_and_self = list(page.get_ancestors()) + [page]
     perm = GroupPagePermission.objects.filter(permission_type=permission_type, page__in=ancestors_and_self)
     q = Q(groups__page_permissions=perm)
+
+    # Page level permissions
+    page_perm_users = page.specific.get_page_user_permissions(permission_type)
+    q |= Q(pk__in=[x.pk for x in page_perm_users])
 
     # Include superusers
     if include_superusers:
